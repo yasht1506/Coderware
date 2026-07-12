@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODERWARE TECHNOLOGIES | Digital Reality</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#0a1020',
+                        primary: '#2563eb',
+                        secondary: '#7c3aed',
+                        navy: '#0f172a',
+                        surface: '#f8fafc',
+                        whatsapp: '#25D366'
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'mesh': 'mesh 15s ease infinite',
+                        'spin-slow': 'spin 30s linear infinite',
+                        'marquee': 'marquee 25s linear infinite',
+                        'morph': 'morph 8s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotate(2deg)' },
+                        },
+                        mesh: {
+                            '0%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                            '100%': { 'background-position': '0% 50%' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        morph: {
+                            '0%, 100%': { 'border-radius': '60% 40% 30% 70% / 60% 30% 70% 40%' },
+                            '50%': { 'border-radius': '30% 60% 70% 40% / 50% 60% 30% 60%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #0f172a;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                cursor: auto;
+            }
+
+            #cursor {
+                display: none;
+            }
+        }
+
+        .mesh-gradient {
+            background: linear-gradient(-45deg, #f8fafc, #eff6ff, #f5f3ff, #ffffff);
+            background-size: 400% 400%;
+            animation: mesh 15s ease infinite;
+        }
+
+        .hero-mesh {
+            background: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.15) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(37, 99, 235, 0.1) 0px, transparent 50%);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 50px -15px rgba(0, 0, 0, 0.05);
+        }
+
+        .noise::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #2563eb 50%, #7c3aed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #cursor {
+            width: 12px;
+            height: 12px;
+            background: #2563eb;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+        }
+
+        #cursor-follower {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.15s ease-out;
+        }
+
+        .service-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tilt-inner {
+            transition: transform 0.2s ease-out;
+        }
+
+        .organic-photo {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: morph 8s ease-in-out infinite;
+        }
+
+        .italic-fix {
+            display: inline-block;
+            padding-right: 0.8em;
+            /* Significantly increased to fix clipping */
+            margin-right: -0.2em;
+        }
+
+        .portfolio-collage {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        .collage-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 40px;
+            border: 8px solid white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .collage-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 40px 80px -20px rgba(37, 99, 235, 0.2);
+        }
+
+        .collage-item-1 {
+            grid-column: span 7;
+            height: 550px;
+        }
+
+        .collage-item-2 {
+            grid-column: span 5;
+            height: 550px;
+        }
+
+        .collage-item-3 {
+            grid-column: span 5;
+            height: 500px;
+        }
+
+        .collage-item-4 {
+            grid-column: span 7;
+            height: 500px;
+        }
+
+        .collage-item-5 {
+            grid-column: span 12;
+            height: 500px;
+        }
+
+        @media (max-width: 1024px) {
+
+            .collage-item-1,
+            .collage-item-2,
+            .collage-item-3,
+            .collage-item-4,
+            .collage-item-5 {
+                grid-column: span 12;
+                height: 450px;
+            }
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            background-color: #25d366;
+            color: #fff;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            background-color: #128c7e;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased mesh-gradient noise">
+
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/917020905724" class="whatsapp-float animate-pulse-slow" target="_blank"
+        title="Chat with us on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div id="preloader"
+        class="fixed inset-0 z-[100] bg-white flex items-center justify-center transition-opacity duration-1000">
+        <div class="flex flex-col items-center">
+            <div class="w-24 h-24 border-2 border-primary/10 border-t-primary rounded-full animate-spin"></div>
+            <span class="mt-6 font-display font-bold text-primary tracking-widest text-xs uppercase">Initialising
+                Reality</span>
+        </div>
+    </div>
+
+    <nav class="fixed top-0 left-0 w-full z-50 px-4 py-4 md:px-8 md:py-8">
+        <div id="navbar"
+            class="max-w-7xl mx-auto flex items-center justify-between glass px-6 py-4 md:px-12 md:py-6 rounded-[30px] md:rounded-[40px]">
+            <div class="flex flex-col cursor-pointer group" onclick="showPage('home')">
+                <span class="font-display font-bold text-xl md:text-3xl tracking-tighter text-navy">C<span
+                        class="text-primary group-hover:text-secondary transition-colors">o</span>derwar<span
+                        class="text-primary group-hover:text-secondary transition-colors">e</span></span>
+                <span
+                    class="text-[7px] md:text-[9px] uppercase tracking-[0.5em] font-black text-slate-400 -mt-1 ml-1">Technologies</span>
+            </div>
+
+            <div class="hidden lg:flex items-center gap-12">
+                <button onclick="showPage('home')"
+                    class="nav-link font-bold text-[10px] uppercase tracking-widest text-slate-500 hover:text-navy transition-all">Home</button>
+                <button onclick="showPage('about')"
+                    class="nav-link font-bold text-[10px] uppercase tracking-widest text-slate-500 hover:text-navy transition-all">Our
+                    DNA</button>
+                <button onclick="showPage('portfolio')"
+                    class="nav-link font-bold text-[10px] uppercase tracking-widest text-slate-500 hover:text-navy transition-all">Success
+                    Stories</button>
+                <button onclick="showPage('contact')"
+                    class="nav-link font-bold text-[10px] uppercase tracking-widest text-slate-500 hover:text-navy transition-all">Contact</button>
+            </div>
+
+            <button onclick="showPage('contact')"
+                class="magnetic-btn px-8 py-3.5 bg-navy hover:bg-primary text-white font-bold rounded-full text-[10px] uppercase tracking-[0.2em] shadow-2xl transition-all hidden md:block">
+                Free Consultation
+            </button>
+
+            <button class="lg:hidden text-2xl text-navy" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mobile-menu"
+        class="fixed inset-0 bg-white/95 backdrop-blur-xl z-[60] flex flex-col items-center justify-center gap-10 opacity-0 pointer-events-none transition-all duration-500 translate-y-10">
+        <button class="absolute top-10 right-10 text-3xl" onclick="toggleMobileMenu()"><i
+                class="fas fa-times"></i></button>
+        <button onclick="showPage('home'); toggleMobileMenu()"
+            class="text-4xl font-display font-bold text-navy">Home</button>
+        <button onclick="showPage('about'); toggleMobileMenu()"
+            class="text-4xl font-display font-bold text-navy">About</button>
+        <button onclick="showPage('portfolio'); toggleMobileMenu()"
+            class="text-4xl font-display font-bold text-navy">Portfolio</button>
+        <button onclick="showPage('contact'); toggleMobileMenu()"
+            class="text-4xl font-display font-bold text-navy">Contact</button>
+    </div>
+
+    <main id="main-content" class="min-h-screen">
+        <!-- INJECTED VIA JS -->
+    </main>
+
+    <footer class="bg-navy text-white pt-32 pb-16 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/10 blur-[150px] -z-10 animate-pulse"></div>
+        <div class="max-w-7xl mx-auto px-10 grid grid-cols-1 md:grid-cols-4 gap-20">
+            <div class="col-span-1 md:col-span-1">
+                <div class="flex flex-col mb-8">
+                    <span class="font-display font-bold text-3xl tracking-tighter">C<span
+                            class="text-primary">o</span>derwar<span class="text-primary">e</span></span>
+                    <span class="text-[10px] uppercase tracking-[0.5em] font-black text-slate-500">Technologies</span>
+                </div>
+                <p class="text-slate-400 mb-10 leading-relaxed font-medium">Transforming Ideas Into Digital Reality.
+                    Engineering the future with absolute precision.</p>
+                <div class="flex gap-6">
+                    <a href="#"
+                        class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all border border-white/10"><i
+                            class="fab fa-linkedin-in"></i></a>
+                    <a href="#"
+                        class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all border border-white/10"><i
+                            class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="font-bold mb-8 uppercase tracking-[0.3em] text-[10px] text-slate-500">Ecosystem</h4>
+                <ul class="space-y-4 text-slate-300 font-bold text-sm tracking-wide">
+                    <li><a href="#" class="hover:text-primary transition-colors">AI Research</a></li>
+                    <li><a href="#" class="hover:text-primary transition-colors">Web3 Engineering</a></li>
+                    <li><a href="#" class="hover:text-primary transition-colors">Cloud Infra</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-bold mb-8 uppercase tracking-[0.3em] text-[10px] text-slate-500">Navigation</h4>
+                <ul class="space-y-4 text-slate-300 font-bold text-sm tracking-wide">
+                    <li><button onclick="showPage('about')" class="hover:text-primary">Our DNA</button></li>
+                    <li><button onclick="showPage('portfolio')" class="hover:text-primary">Archives</button></li>
+                    <li><button onclick="showPage('contact')" class="hover:text-primary">Connect</button></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="font-bold mb-8 uppercase tracking-[0.3em] text-[10px] text-slate-500">Connect</h4>
+                <p class="text-slate-300 font-bold text-sm">contact.coderware@gmail.com</p>
+                <p class="text-slate-300 font-bold text-sm mt-2">+91 7020905724</p>
+                <p class="text-slate-500 text-xs mt-4 leading-relaxed font-bold">Vision City Nagpur<br>MH 441001 INDIA
+                </p>
+                <div class="mt-8 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    <span class="text-[10px] font-black text-slate-500 uppercase">Operational Status: Optimal</span>
+                </div>
+            </div>
+        </div>
+        <div
+            class="max-w-7xl mx-auto px-10 mt-32 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500 text-[9px] font-black uppercase tracking-[0.4em]">
+            <span>&copy; 2026 CODERWARE TECHNOLOGIES</span>
+            <span>Digital DNA v3.0</span>
+        </div>
+    </footer>
+
+    <script>
+        const pages = {
+            home: `
+                <section class="min-h-screen flex items-center px-6 md:px-12 pt-32 md:pt-40 relative overflow-hidden hero-mesh">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center z-10">
+                        <div class="reveal">
+                            <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-10">
+                                <i class="fas fa-bolt animate-pulse"></i> Engineering Digital Sovereignty
+                            </div>
+                            <h1 class="text-5xl sm:text-6xl md:text-[110px] font-display font-bold mb-10 leading-[1] md:leading-[0.85] tracking-tight md:tracking-tighter text-navy overflow-visible">
+                                One step solution for <br>
+                                all your <span class="text-gradient italic italic-fix text-5xl sm:text-7xl md:text-[110px]">business needs</span>
+                            </h1>
+                            <p class="text-xl md:text-2xl text-slate-500 mb-14 max-w-2xl leading-relaxed font-medium">
+                                High-performance foundations for enterprises that refuse to settle. We build the architecture of the future.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-8">
+                                <button onclick="showPage('contact')" class="magnetic-btn px-14 py-6 bg-navy text-white font-bold rounded-[24px] hover:bg-primary transition-all shadow-2xl shadow-navy/20 uppercase tracking-widest text-xs">
+                                    Make An Enquiry
+                                </button>
+                                <button onclick="showPage('portfolio')" class="px-14 py-6 glass text-navy font-bold rounded-[24px] hover:bg-white transition-all flex items-center justify-center gap-4 uppercase tracking-widest text-xs">
+                                    Explore Cases <i class="fas fa-arrow-right-long text-primary"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative flex justify-center reveal" style="transition-delay: 0.3s">
+                            <div class="absolute inset-0 bg-primary/5 rounded-full blur-[100px] animate-pulse"></div>
+                            <div class="w-full max-w-[550px] aspect-square organic-photo overflow-hidden border-[20px] border-white shadow-2xl relative group">
+                                <img src="/Image/img1.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Core">
+                                <div class="absolute inset-0 bg-primary/10 mix-blend-color-dodge"></div>
+                            </div>
+                            <div class="absolute -top-10 -right-10 glass p-8 rounded-[40px] animate-float">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary"><i class="fas fa-brain"></i></div>
+                                    <div>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Efficiency</p>
+                                        <h5 class="text-2xl font-bold text-navy">+420%</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="py-24 mt-24 bg-white border-y border-slate-100 overflow-hidden relative">
+                    <div class="flex whitespace-nowrap animate-marquee">
+                        <div class="flex items-center gap-20 px-10">
+                            <span class="text-4xl font-display font-black text-slate-100 uppercase italic">Software Modernisation</span>
+                            <span class="text-4xl font-display font-black text-primary uppercase italic">Artificial Intelligence</span>
+                            <span class="text-4xl font-display font-black text-slate-100 uppercase italic">Blockchain Protocol</span>
+                            <span class="text-4xl font-display font-black text-secondary uppercase italic">Hybrid Cloud</span>
+                            <span class="text-4xl font-display font-black text-slate-100 uppercase italic">Data Engineering</span>
+                        </div>
+                        <div class="flex items-center gap-20 px-10">
+                            <span class="text-4xl font-display font-black text-slate-100 uppercase italic">Software Modernisation</span>
+                            <span class="text-4xl font-display font-black text-primary uppercase italic">Artificial Intelligence</span>
+                            <span class="text-4xl font-display font-black text-slate-100 uppercase italic">Blockchain Protocol</span>
+                            <span class="text-4xl font-display font-black text-secondary uppercase italic">Hybrid Cloud</span>
+                            <span class="text-4xl font-display font-black text-slate-100 uppercase italic">Data Engineering</span>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="py-40 bg-white px-10">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-10 md:grid-rows-2">
+                            <div class="md:col-span-7 md:row-span-1 service-card glass p-12 rounded-[60px] relative overflow-hidden reveal">
+                                <div class="tilt-inner h-full flex flex-col justify-end">
+                                    <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary text-3xl mb-8"><i class="fas fa-terminal"></i></div>
+                                    <h3 class="text-4xl font-bold text-navy mb-6 leading-tight">Software Modernisation <br>& Strategic Architecture</h3>
+                                    <p class="text-slate-500 font-medium max-w-lg">Redefining legacy infrastructure into high-velocity microservices that handle millions of requests.</p>
+                                </div>
+                            </div>
+                            <div class="md:col-span-5 md:row-span-2 service-card bg-navy p-12 rounded-[60px] text-white relative overflow-hidden reveal" style="transition-delay: 0.1s">
+                                <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-primary/20 to-transparent -z-10"></div>
+                                <div class="tilt-inner h-full flex flex-col">
+                                    <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-white text-3xl mb-10"><i class="fas fa-microchip"></i></div>
+                                    <h3 class="text-4xl font-bold mb-8">AI & Machine Learning Solutions</h3>
+                                    <p class="text-slate-400 font-medium mb-12">Proprietary LLM orchestration and predictive neural networks integrated into core business logic.</p>
+                                    <div class="mt-auto flex flex-wrap gap-3">
+                                        <span class="px-5 py-2 bg-white/5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">Neural Nets</span>
+                                        <span class="px-5 py-2 bg-white/5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">NLP Research</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-4 md:row-span-1 service-card glass p-10 rounded-[60px] reveal">
+                                <div class="tilt-inner">
+                                    <div class="w-14 h-14 bg-secondary/5 rounded-2xl flex items-center justify-center text-secondary text-2xl mb-6"><i class="fas fa-cloud-bolt"></i></div>
+                                    <h3 class="text-2xl font-bold text-navy mb-4">Hybrid Cloud</h3>
+                                    <p class="text-slate-500 text-sm font-medium">Scalable AWS/Azure multi-region ecosystems.</p>
+                                </div>
+                            </div>
+                            <div class="md:col-span-3 md:row-span-1 service-card glass p-10 rounded-[60px] reveal" style="transition-delay: 0.2s">
+                                <div class="tilt-inner">
+                                    <div class="w-14 h-14 bg-accent/5 rounded-2xl flex items-center justify-center text-accent text-2xl mb-6"><i class="fas fa-link"></i></div>
+                                    <h3 class="text-2xl font-bold text-navy mb-4">Web3</h3>
+                                    <p class="text-slate-500 text-sm font-medium">Decentralized protocols and smart trust.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="py-40 bg-slate-50 px-6 relative overflow-hidden">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+                        <div class="reveal relative h-auto flex justify-center lg:justify-start">
+                            <div class="absolute -top-10 -left-10 w-96 h-96 bg-primary/5 organic-photo -z-10 animate-pulse"></div>
+                            <div class="w-full max-w-[550px] aspect-[4/5.5] md:aspect-[4/5] organic-photo overflow-hidden border-[24px] border-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] relative bg-slate-50">
+                                <img src="/Image/Pro.jpeg" class="w-full h-full object-cover object-center" alt="Yash Tamsetwar">
+                            </div>
+                        </div>
+                        <div class="reveal" style="transition-delay: 0.2s">
+                            <div class="inline-flex items-center gap-4 mb-10">
+                                <div class="w-16 h-1 bg-primary"></div>
+                                <span class="text-primary font-black uppercase tracking-[0.5em] text-[10px]">Technical Leadership</span>
+                            </div>
+                            <h2 class="text-5xl md:text-7xl font-display font-bold text-navy mb-12 tracking-tighter overflow-visible">Empowering Enterprise <br><span class="text-gradient italic italic-fix">Velocity</span></h2>
+                            <div class="relative mb-16">
+                                <i class="fas fa-quote-left text-primary/10 text-9xl absolute -top-16 -left-16"></i>
+                                <p class="text-2xl md:text-4xl font-medium text-slate-700 leading-tight italic relative z-10">
+                                    "We don't just solve IT issues. We build the competitive advantage that allows businesses to dominate their digital vertical."
+                                </p>
+                            </div>
+                            <div>
+                                <h4 class="text-2xl font-bold text-navy">Yash Tamsetwar</h4>
+                                <p class="text-primary font-black uppercase tracking-widest text-xs mt-2">Principal Architect • Coderware Systems</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="py-40 bg-white px-10">
+                    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-32">
+                        <div class="w-full lg:w-1/3 reveal">
+                            <h3 class="text-6xl font-display font-bold text-navy mb-10 tracking-tighter">What our <br>Customers Say...</h3>
+                            <p class="text-slate-500 font-medium text-lg leading-relaxed">
+                                Our reputation is built on <span class="text-primary font-bold">Absolute Reliability</span>. We turn complex engineering into seamless business growth.
+                            </p>
+                            <div class="mt-14 flex items-center gap-8">
+                                <div class="flex -space-x-4">
+                                    <img src="https://images.unsplash.com/photo-1589386417686-0d34b5903d23?auto=format&fit=crop&q=80&w=150&h=150" class="w-14 h-14 rounded-full border-4 border-white object-cover aspect-square shadow-lg" alt="Reviewer 1">
+                                    <img src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&q=80&w=150&h=150" class="w-14 h-14 rounded-full border-4 border-white object-cover aspect-square shadow-lg" alt="Reviewer 2">
+                                    <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80&w=150&h=150" class="w-14 h-14 rounded-full border-4 border-white object-cover aspect-square shadow-lg" alt="Reviewer 3">
+                                </div>
+                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">+500 verified reviews</span>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-2/3 space-y-10">
+                            <div class="glass p-12 rounded-[50px] reveal hover:shadow-2xl transition-all">
+                                <div class="flex items-center justify-between mb-10">
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-20 h-20 rounded-[24px] overflow-hidden border-2 border-primary/20 bg-slate-100">
+                                            <img src="/Image/Mama.jpeg" class="w-full h-full object-cover" alt="Arvind Subbanwar">
+                                        </div>
+                                        <div>
+                                            <h5 class="text-xl font-bold text-navy">Arvind Subbanwar</h5>
+                                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Chief Operations Officer • MOV CNI</p>
+                                        </div>
+                                    </div>
+                                    <i class="fab fa-linkedin text-[#0077b5] text-4xl opacity-10"></i>
+                                </div>
+                                <p class="text-xl text-slate-600 font-medium italic leading-relaxed">
+                                    "We faced a critical infrastructure collapse during peak hours. Coderware's emergency protocol saved our data and restored services in minutes. Truly professional."
+                                </p>
+                            </div>
+                            <div class="glass p-12 rounded-[50px] reveal lg:-ml-16 shadow-2xl transition-all" style="transition-delay: 0.1s">
+                                <div class="flex items-center justify-between mb-10">
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-20 h-20 rounded-[24px] overflow-hidden border-2 border-primary/20 bg-slate-100">
+                                            <img src="/Image/sarthak.jpeg" class="w-full h-full object-cover" alt="Sarthak Singh">
+                                        </div>
+                                        <div>
+                                            <h5 class="text-xl font-bold text-navy">Sarthak Singh</h5>
+                                            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Lead Developer • DeLance Solutions</p>
+                                        </div>
+                                    </div>
+                                    <i class="fab fa-linkedin text-[#0077b5] text-4xl opacity-10"></i>
+                                </div>
+                                <p class="text-xl text-slate-600 font-medium italic leading-relaxed">
+                                    "Reliable, efficient, and technical experts. Their modernization of our legacy stacks has been a game-changer for our annual growth."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `,
+            about: `
+                <section class="min-h-[70vh] flex items-center px-10 pt-32 md:pt-40 hero-mesh">
+                    <div class="max-w-7xl mx-auto w-full reveal">
+                        <span class="text-primary font-black tracking-[0.6em] uppercase text-[10px] mb-8 block">Our Technical DNA</span>
+                        <h1 class="text-6xl md:text-[120px] font-display font-bold leading-[1] md:leading-[0.8] tracking-tight md:tracking-tighter text-navy overflow-visible">Pioneering <br><span class="text-gradient italic-fix">Digital Reality</span></h1>
+                    </div>
+                </section>
+                <section class="py-40 bg-white px-10">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+                        <div class="reveal">
+                            <h2 class="text-5xl font-display font-bold text-navy mb-10">A Laboratory of <br>Future Systems</h2>
+                            <p class="text-slate-500 text-xl mb-12 leading-relaxed font-medium">Since 2018, Coderware Technologies has evolved from a small research group into a global leader in enterprise-grade software and AI systems.</p>
+                            <div class="grid grid-cols-2 gap-10">
+                                <div class="p-10 glass rounded-[40px] text-center border-b-4 border-primary">
+                                    <h5 class="text-5xl font-bold text-navy">50+</h5>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-4">Active Deployments</p>
+                                </div>
+                                <div class="p-10 glass rounded-[40px] text-center border-b-4 border-secondary">
+                                    <h5 class="text-5xl font-bold text-navy">08+</h5>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-4">Active Sprints</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="organic-photo bg-slate-50 p-6 reveal" style="transition-delay: 0.2s">
+                            <img src="/Image/team.jpg" class="w-full organic-photo grayscale transition-all duration-1000 hover:grayscale-0 shadow-2xl" alt="Lab">
+                        </div>
+                    </div>
+                </section>
+            `,
+            portfolio: `
+                <section class="pt-40 pb-40 px-10">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="text-center mb-32 reveal">
+                            <h4 class="text-primary font-black uppercase tracking-[0.5em] text-[10px] mb-6">Archives</h4>
+                            <h2 class="text-7xl font-display font-bold text-navy tracking-tighter leading-none overflow-visible">High Fidelity <br><span class="text-gradient italic-fix">Case Studies</span></h2>
+                        </div>
+                        
+                        <div class="portfolio-collage">
+                            <div class="collage-item collage-item-1 group reveal" onclick="window.open('https://cartify-5724.myshopify.com/', '_blank')">
+                                <img src="/Image/cartify.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Cartify">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-12 w-full flex justify-between items-end">
+                                    <div class="max-w-md">
+                                        <span class="text-primary font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">E-Commerce</span>
+                                        <h3 class="text-4xl font-bold text-white mb-4">CARTIFY ONLINE STORE</h3>
+                                        <p class="text-slate-300 text-sm font-medium">Transformed retail friction into high-velocity sales with an AI-driven storefront and frictionless checkout.</p>
+                                    </div>
+                                    <div class="flex gap-4 translate-y-24 group-hover:translate-y-0 transition-transform">
+                                        <div onclick="event.stopPropagation(); window.open('https://wa.me/917020905724', '_blank')" class="w-14 h-14 rounded-2xl bg-whatsapp text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform"><i class="fab fa-whatsapp text-2xl"></i></div>
+                                        <div class="w-14 h-14 rounded-2xl bg-white text-navy flex items-center justify-center shadow-2xl"><i class="fas fa-arrow-up-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="collage-item collage-item-2 group reveal" style="transition-delay: 0.1s" onclick="window.open('#', '_blank')">
+                                <img src="/Image/Car.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Car Rentz">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-10">
+                                    <span class="text-secondary font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Fleet Management</span>
+                                    <h3 class="text-3xl font-bold text-white mb-2">CAR RENTAL AND BOOKING</h3>
+                                    <p class="text-slate-300 text-xs">Eliminated manual booking chaos through a real-time automated fleet management and scheduling engine.</p>
+                                </div>
+                            </div>
+
+                            <div class="collage-item collage-item-3 group reveal" style="transition-delay: 0.2s" onclick="window.open('#', '_blank')">
+                                <img src="/Image/delance.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Delance">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-10">
+                                    <span class="text-accent font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Blockchain Freelance</span>
+                                    <h3 class="text-3xl font-bold text-white mb-2">DELANCE DECENTRALIZED</h3>
+                                    <p class="text-slate-300 text-xs">Revolutionized global freelancing trust by using smart contracts to ensure instant payments and zero platform fees.</p>
+                                </div>
+                            </div>
+
+                            <div class="collage-item collage-item-4 group reveal" style="transition-delay: 0.3s" onclick="window.open('https://www.movcni.in/', '_blank')">
+                                <img src="/Image/MOV.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="MOV CNI">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-12 w-full flex justify-between items-end">
+                                    <div class="max-w-md">
+                                        <span class="text-primary font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Industrial Automation</span>
+                                        <h3 class="text-4xl font-bold text-white mb-4">MOC CNI MOV ACTUATOR</h3>
+                                        <p class="text-slate-300 text-sm font-medium">Maximizing industrial uptime with a high-precision diagnostic portal for critical plant actuator monitoring.</p>
+                                    </div>
+                                    <div class="flex gap-4 translate-y-24 group-hover:translate-y-0 transition-transform">
+                                        <div onclick="event.stopPropagation(); window.open('https://wa.me/917020905724', '_blank')" class="w-14 h-14 rounded-2xl bg-whatsapp text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform"><i class="fab fa-whatsapp text-2xl"></i></div>
+                                        <div class="w-14 h-14 rounded-2xl bg-white text-navy flex items-center justify-center shadow-2xl"><i class="fas fa-arrow-up-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="collage-item collage-item-5 group reveal" style="transition-delay: 0.4s" onclick="window.open('https://sawariya-internationals-1whso3jk2-coderware-technologies.vercel.app/', '_blank')">
+                                <img src="/Image/pharma.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="Nexus AI">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 p-12 w-full flex justify-between items-end">
+                                    <div class="max-w-md">
+                                        <span class="text-secondary font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">GLOBAL RETAILER</span>
+                                        <h3 class="text-4xl font-bold text-white mb-4">GLOBAL PHARMASUTICAL PLATFORM</h3>
+                                        <p class="text-slate-300 text-sm font-medium">A state-of-the-art predictive analytics dashboard providing real-time data insights using machine learning.</p>
+                                    </div>
+                                    <div class="flex gap-4 translate-y-24 group-hover:translate-y-0 transition-transform">
+                                        <div onclick="event.stopPropagation(); window.open('https://wa.me/917020905724', '_blank')" class="w-14 h-14 rounded-2xl bg-whatsapp text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform"><i class="fab fa-whatsapp text-2xl"></i></div>
+                                        <div class="w-14 h-14 rounded-2xl bg-white text-navy flex items-center justify-center shadow-2xl"><i class="fas fa-arrow-up-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `,
+            contact: `
+                <section class="pt-40 pb-40 px-10">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-40">
+                        <div class="reveal">
+                            <h2 class="text-8xl font-display font-bold text-navy mb-12 tracking-tighter leading-[0.8] overflow-visible">Let's Design <br><span class="text-gradient italic-fix">Your Engine</span></h2>
+                            <p class="text-2xl text-slate-500 font-medium italic mb-20 leading-relaxed">"The difference between a cost centre and a growth engine is strategy."</p>
+                            <div class="space-y-14">
+                                <div class="flex items-center gap-10 group">
+                                    <div class="w-24 h-24 glass rounded-[35px] flex items-center justify-center text-primary text-4xl shadow-xl transition-all group-hover:bg-primary group-hover:text-white"><i class="fas fa-satellite-dish"></i></div>
+                                    <div>
+                                        <h5 class="text-2xl font-bold text-navy">Direct Hub</h5>
+                                        <p class="text-[10px] font-black lowercase text-slate-400 tracking-[0.3em] mt-2">contact.coderware@gmail.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-10 group">
+                                    <div class="w-24 h-24 glass rounded-[35px] flex items-center justify-center text-primary text-4xl shadow-xl transition-all group-hover:bg-primary group-hover:text-white"><i class="fas fa-location-dot"></i></div>
+                                    <div>
+                                        <h5 class="text-2xl font-bold text-navy">Corporate HQ</h5>
+                                        <p class="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mt-2">Vision City, Nagpur, MH 441001 INDIA</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass p-16 rounded-[70px] reveal shadow-2xl" style="transition-delay: 0.1s">
+                            <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-12">
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-6">Your Identity</label>
+                                    <input type="text" id="form-name" required class="w-full bg-slate-50 border-b-2 border-slate-200 py-6 focus:border-primary focus:outline-none transition-all font-bold text-navy placeholder:text-slate-200" placeholder="NAME / ORGANISATION">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-6">Business Pipeline</label>
+                                    <input type="email" id="form-email" required class="w-full bg-slate-50 border-b-2 border-slate-200 py-6 focus:border-primary focus:outline-none transition-all font-bold text-navy placeholder:text-slate-200" placeholder="WORK@EMAIL.COM">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mb-6">Technical Objectives</label>
+                                    <textarea rows="4" id="form-message" required class="w-full bg-slate-50 border-b-2 border-slate-200 py-6 focus:border-primary focus:outline-none transition-all font-bold text-navy placeholder:text-slate-200" placeholder="TELL US ABOUT THE GOALS..."></textarea>
+                                </div>
+                                <button type="submit" class="w-full py-8 bg-navy text-white font-black rounded-[30px] text-sm uppercase tracking-[0.5em] hover:bg-primary transition-all shadow-2xl">
+                                    INITIALISE MISSION
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            `
+        };
+
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            cursorX = e.clientX;
+            cursorY = e.clientY;
+            cursor.style.transform = `translate(${cursorX - 6}px, ${cursorY - 6}px)`;
+            setTimeout(() => {
+                follower.style.transform = `translate(${cursorX - 20}px, ${cursorY - 20}px)`;
+            }, 50);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.service-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+                    const inner = card.querySelector('.tilt-inner');
+                    if (inner) inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                } else {
+                    const inner = card.querySelector('.tilt-inner');
+                    if (inner) inner.style.transform = `rotateX(0) rotateY(0) scale(1)`;
+                }
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const btns = document.querySelectorAll('.magnetic-btn');
+            btns.forEach(btn => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const distance = Math.sqrt(x * x + y * y);
+                if (distance < 100) {
+                    btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                } else {
+                    btn.style.transform = `translate(0, 0)`;
+                }
+            });
+        });
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const isOpen = menu.classList.contains('opacity-100');
+            if (isOpen) {
+                menu.classList.replace('opacity-100', 'opacity-0');
+                menu.classList.add('pointer-events-none', 'translate-y-10');
+            } else {
+                menu.classList.replace('opacity-0', 'opacity-100');
+                menu.classList.remove('pointer-events-none', 'translate-y-10');
+            }
+        }
+
+        // --- IMPROVED FORM HANDLER ---
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('form-name').value;
+            const email = document.getElementById('form-email').value;
+            const message = document.getElementById('form-message').value;
+
+            const subject = encodeURIComponent(`Project Inquiry from ${name}`);
+            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+            const mailtoUrl = `mailto:contact.coderware@gmail.com?subject=${subject}&body=${body}`;
+            const whatsappUrl = `https://wa.me/917020905724?text=${encodeURIComponent('Hi, I am ' + name + '.\nEmail: ' + email + '\nEnquiry: ' + message)}`;
+
+            // UI Feedback
+            const form = document.getElementById('contact-form');
+            form.innerHTML = `
+                <div class="text-center py-10 animate-morph bg-primary/5 rounded-[50px]">
+                    <div class="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 animate-bounce">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <h3 class="text-3xl font-display font-bold text-navy mb-4">Select Channel</h3>
+                    <p class="text-slate-500 font-medium max-w-xs mx-auto mb-8">Choose your preferred method to send the request to <b>contact.coderware@gmail.com</b></p>
+                    
+                    <div class="flex flex-col gap-4 px-6">
+                        <a href="${mailtoUrl}" class="flex items-center justify-center gap-3 px-8 py-5 bg-navy text-white font-bold rounded-full hover:bg-primary transition-all shadow-xl">
+                            <i class="fas fa-envelope"></i> SEND VIA EMAIL
+                        </a>
+                        <a href="${whatsappUrl}" target="_blank" class="flex items-center justify-center gap-3 px-8 py-5 bg-whatsapp text-white font-bold rounded-full hover:bg-opacity-90 transition-all shadow-xl">
+                            <i class="fab fa-whatsapp text-xl"></i> SEND VIA WHATSAPP
+                        </a>
+                    </div>
+                    
+                    <button onclick="location.reload()" class="block text-xs font-bold text-slate-400 mt-8 uppercase tracking-widest hover:text-navy">Reset Form</button>
+                </div>
+            `;
+        }
+
+        function showPage(pageId) {
+            const content = document.getElementById('main-content');
+            content.style.opacity = 0;
+            setTimeout(() => {
+                content.innerHTML = pages[pageId];
+                content.style.opacity = 1;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('nav-active');
+                    if (link.innerText.toLowerCase().includes(pageId) || (pageId === 'about' && link.innerText.toLowerCase().includes('dna'))) {
+                        link.classList.add('nav-active');
+                    }
+                });
+                handleScrollReveal();
+            }, 300);
+        }
+
+        function handleScrollReveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.95) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('preloader');
+                loader.style.opacity = 0;
+                setTimeout(() => loader.remove(), 1000);
+            }, 1500);
+            showPage('home');
+            window.addEventListener('scroll', handleScrollReveal);
+        };
+    </script>
+</body>
+
+</html>
