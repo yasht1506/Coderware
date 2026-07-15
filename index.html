@@ -230,7 +230,8 @@
         .whatsapp-float {
             position: fixed;
             bottom: 40px;
-            right: 40px;
+            left: 40px;
+            right: auto;
             width: 60px;
             height: 60px;
             background-color: #25d366;
@@ -249,6 +250,13 @@
         .whatsapp-float:hover {
             transform: scale(1.1);
             background-color: #128c7e;
+        }
+
+        elevenlabs-convai {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            z-index: 9999;
         }
     </style>
 </head>
@@ -860,6 +868,18 @@
             window.addEventListener('scroll', handleScrollReveal);
         };
     </script>
+
+    <!-- ElevenLabs Conversational AI Agent -->
+    <elevenlabs-convai
+        agent-id="agent_1001kxjk4en0erqsrvgdsj2qb4cg"
+        branch-id="agtbrch_4201kxjk4f98ftnvjdbrcf956w45"
+        avatar-orb-color-1="#2563eb"
+        avatar-orb-color-2="#7c3aed"
+        action-text="Talk to our AI Agent"
+        start-call-text="Start Conversation"
+        end-call-text="End Conversation">
+    </elevenlabs-convai>
+    <script src="https://elevenlabs.io/convai-widget/index.js" async type="text/javascript"></script>
 </body>
 
 </html>
